@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://vjs.zencdn.net/7.18.1/video-js.css" rel="stylesheet">
+    <script src="https://vjs.zencdn.net/7.18.1/video.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-hls@5.15.0/dist/videojs-contrib-hls.min.js"></script>
+</head>
+<body>
+    <h1>Audio Stream</h1>
+    {% load static %}
+    {% if audio_files %}
+    {% for audio in audio_files %}
+        <h3>{{ audio }}</h3>
+        <video-js id="my-audio" class="video-js vjs-default-skin" controls preload="auto" width="600" height="30"
+               data-setup='{}'>
+               <source src="{% static 'arslan/'|add:audio %}" type="application/x-mpegURL">
+
+               {% comment %}
+ 
+          
+            <source src="{% url static 'serve_audio' filename=audio_files.0 %}" type="application/x-mpegURL">
+            {% endcomment %}
+            <p class="vjs-no-js">
+                To listen to this audio please enable JavaScript, and consider upgrading to a
+                web browser that
+                <a href="https://videojs.com/html5-audio-support/" target="_blank">supports HTML5 audio</a>
+            </p>
+        </video-js>
+        {% endfor %}
+
+    {% else %}
+        <p>No audio files available.</p>
+    {% endif %}
+
+    <script>
+        var player = videojs('my-audio');
+    </script>
+</body>
+</html>
