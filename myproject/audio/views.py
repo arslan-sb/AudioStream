@@ -42,7 +42,7 @@ def audio_list(request):
     username = request.user.username
     audio_files=[]
     # Navigate to the folder according to the username
-    parent_dir = os.path.join(r"D:\Music\myproject\static", username)
+    parent_dir = os.path.join(r"..\myproject\static", username)
     
     if os.path.exists(parent_dir):
     # List all .m3u8 files in the user's directory

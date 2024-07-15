@@ -3,7 +3,7 @@ import subprocess
 import imageio_ffmpeg as ffmpeg_executable
 
 input_directory = r"D:\Music\assets\audios"
-output_directory = r"D:\Music\myproject\static\saqib"
+output_directory = r"..\myproject\static\bakhtUllah"
 
 def check_permissions(file_path, mode):
     """Check if the file or directory has the specified access mode."""
