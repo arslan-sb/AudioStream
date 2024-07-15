@@ -118,9 +118,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 # Redirect to Login Page
-LOGIN_URL = '/accounts/login/'
+# LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/audio/'
-LOGOUT_REDIRECT_URL = '/accounts/login/'
+# LOGOUT_REDIRECT_URL = '/accounts/login/'
+# settings.py
+LOGIN_URL = '/audio/login/'
+LOGOUT_REDIRECT_URL = '/audio/login/'
+
 
 
 

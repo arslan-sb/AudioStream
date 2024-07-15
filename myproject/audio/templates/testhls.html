@@ -1,30 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beautiful Audio Stream</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+{% extends 'logout.html' %}
+{% load static %}
+{% block title %}Beautiful Audio Stream{% endblock %}
+
+{% block content %}
     <link href="https://vjs.zencdn.net/7.18.1/video-js.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
             color: #333;
+            margin: 20px;
         }
         h1 {
-            color: #0275d8;
+            color: #345876;
             text-align: center;
+            margin-top: 30px;
             margin-bottom: 30px;
         }
         .audio-container {
-            margin: 20px 0;
+            margin: 40px 0;
             padding: 15px;
+            padding-bottom: 40px;
             background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s;
         }
         .audio-container:hover {
@@ -33,6 +34,8 @@
         .audio-title {
             font-size: 1.2em;
             margin-bottom: 10px;
+            height: 60px;
+            margin-bottom: 20px;
         }
         .no-audio {
             text-align: center;
@@ -40,55 +43,125 @@
             font-size: 1.2em;
             margin-top: 20px;
         }
-
-        
-    </style>
-    <style>
         /* Customize the player */
-        .video-js .vjs-big-play-button { display: none;} /* Hide the big play button */
-        .video-js .vjs-control-bar { background-color: #333; } /* Control bar color */
-        .video-js .vjs-progress-holder { height: 5px; } /* Progress bar height */
-        .video-js .vjs-volume-panel { display: none; } /* Hide volume panel for audio */
+        .vjs-big-play-centered{
+            height: 20px;
+            width: auto;
+        }
+        .video-js.vjs-audio {
+    /* Reset the height of the player to the height of the controller */
+    height: 3em;
         
+    /* Who needs this ? */
+    .vjs-big-play-button {
+        display: none;
+    }
+    /* Make the controlbar visible by default */
+    .vjs-control-bar {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        border-radius: 15px;
+        background-color: #474a59;
+    }
+    /* The spinner is useless when there is just the controller only mode */
+    .vjs-loading-spinner {
+        display: none;
+    }
+    /* Add another way to indicate waiting by using the progress slider */
+    &.vjs-waiting .vjs-progress-holder:not( .vjs-seeking ) {
+        height: .5em;
+        background-image: repeating-linear-gradient(
+            -45deg,
+            #73859f,
+            #73859f 11px,
+            #eee 10px,
+            #eee 20px
+        );
+        border-radius: 3px;
+        background-size: 28px 28px;
 
+        transition: height .5s;
+        animation: vjs-slider-indeterminate .5s linear infinite;
 
+        .vjs-play-progress {
+            display: none;
+            
+        }
+    }
+}
+@keyframes vjs-slider-indeterminate {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 28px 0;
+    }
+}
+        
     </style>
     
+    <div class="card">
+        <div class="card-body">
+    {% load static %}
+    {% if audio_files %}
+    <div class="row">
+    {% for audio in audio_files %}
+    <div class="col-12 col-lg-4">
+        <div class="audio-container">
+            <div class="audio-title">{{ audio }}</div>
+            <label>
+                <input type="checkbox" class="audio-checkbox" data-audio-id="{{ forloop.counter }}">
+                Mark this audio
+            </label>
+            <div class="card rounded" style="height: auto;">
+            <div class="card-body " >
+                <audio id="my-audio{{ forloop.counter }}" vjs-big-play-centered style="height: 30px;  width: 100%;border-radius: 15px" class="vjs-matrix video-js" controls preload="auto" 
+                    data-setup='{"controlBar": {"fullscreenToggle": false, "pictureInPictureToggle": false}}'>
+                    <source src="{% static username|add:'/'|add:audio  %}" type="application/x-mpegURL">
+                    <p class="vjs-no-js">
+                        To listen to this audio please enable JavaScript, and consider upgrading to a
+                        web browser that
+                        <a href="https://videojs.com/html5-audio-support/" target="_blank">supports HTML5 audio</a>
+                    </p>
+                </audio>
+            </div>
+            </div>
+        </div>
+    </div>
+        <script>
+            videojs('my-audio{{ forloop.counter }}');
+        </script>
+    {% endfor %}
+</div>
+    {% else %}
+        <div class="no-audio">No audio files available.</div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Retrieve the marked audios from localStorage
+        var markedAudios = JSON.parse(localStorage.getItem('markedAudios')) || {};
     
+        // Set the checkbox state based on localStorage data
+        document.querySelectorAll('.audio-checkbox').forEach(function(checkbox) {
+            var audioId = checkbox.dataset.audioId;
+            checkbox.checked = markedAudios[audioId] === true;
+            checkbox.addEventListener('change', function() {
+                // Update localStorage when checkbox changes
+                markedAudios[audioId] = checkbox.checked;
+                localStorage.setItem('markedAudios', JSON.stringify(markedAudios));
+            });
+        });
+    
+        // Initialize Video.js for all audio elements
+        // videojs(document.querySelectorAll('.video-js'));
+    });
+    </script>
+    
+</div>
     <script src="https://vjs.zencdn.net/7.18.1/video.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-hls@5.15.0/dist/videojs-contrib-hls.min.js"></script>
-</head>
-<body>
-    <div class="container">
-        <h1>Beautiful Audio Stream</h1>
-        {% load static %}
-        {% if audio_files %}
-        {% for audio in audio_files %}
-            <div class="audio-container">
-                <div class="audio-title">{{ audio }}</div>
-                <div class="card rounded" style="height: 20px;">
-                <div class="card-body " >
-                    <video id="my-audio{{ forloop.counter }}" style="height: 20px; border-radius: 50px; width: 100%;" class="vjs-matrix video-js" controls preload="auto"
-                        data-setup='{}'>
-                        <source src="{% static 'arslan/'|add:audio %}" type="application/x-mpegURL">
-                        <p class="vjs-no-js">
-                            To listen to this audio please enable JavaScript, and consider upgrading to a
-                            web browser that
-                            <a href="https://videojs.com/html5-audio-support/" target="_blank">supports HTML5 audio</a>
-                        </p>
-                    </video>
-                </div>
-                </div>
-            </div>
-            <script>
-                videojs('my-audio{{ forloop.counter }}');
-            </script>
-        {% endfor %}
-        {% else %}
-            <div class="no-audio">No audio files available.</div>
-        {% endif %}
-    </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% endblock %}
